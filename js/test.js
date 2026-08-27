@@ -76,6 +76,10 @@
 
     renderResult(scores, topGroups);
 
+    if (typeof gtag === "function") {
+      gtag("event", "test_complete", { group: topGroups[0].toLowerCase() });
+    }
+
     quizSection.style.display = "none";
     resultArea.classList.add("show");
     resultArea.scrollIntoView({ behavior: "smooth", block: "start" });
