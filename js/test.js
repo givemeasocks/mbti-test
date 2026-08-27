@@ -139,6 +139,18 @@
     setTimeout(function () { toast.classList.remove("show"); }, 2200);
   }
 
+  function copyLinkFallback(url) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function () {
+        showToast("링크가 복사되었어요! 친구에게 공유해보세요 📋");
+      }).catch(function () {
+        showToast("복사에 실패했어요. 주소창 URL을 직접 공유해주세요.");
+      });
+    } else {
+      showToast("이 브라우저에서는 자동 공유가 지원되지 않아요.");
+    }
+  }
+
   shareBtn.addEventListener("click", function () {
     var shareData = {
       title: "MBTI 공부법 연구소",
@@ -146,15 +158,12 @@
       url: location.origin + location.pathname.replace(/test\.html$/, "") + "test.html"
     };
     if (navigator.share) {
-      navigator.share(shareData).catch(function () {});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareData.url).then(function () {
-        showToast("링크가 복사되었어요! 친구에게 공유해보세요 📋");
-      }).catch(function () {
-        showToast("복사에 실패했어요. 주소창 URL을 직접 공유해주세요.");
+      navigator.share(shareData).catch(function (err) {
+        if (err && err.name === "AbortError") return;
+        copyLinkFallback(shareData.url);
       });
     } else {
-      showToast("이 브라우저에서는 자동 공유가 지원되지 않아요.");
+      copyLinkFallback(shareData.url);
     }
   });
 })();
